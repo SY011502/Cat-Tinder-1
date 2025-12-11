@@ -1,0 +1,29 @@
+@if (cat()) {
+  <div class="relative w-full h-full cursor-grab touch-none" [class.transition-transform]="isAnimating()" [style.transform]="cardTransform()">
+    <!-- Card content -->
+    <div class="relative w-full h-full bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden">
+      @if (active()) {
+        <img [ngSrc]="'https://cataas.com/cat/' + cat().id" fill priority
+             class="w-full h-full object-cover" alt="A cute cat">
+      } @else {
+        <img [ngSrc]="'https://cataas.com/cat/' + cat().id" fill
+             class="w-full h-full object-cover" alt="A cute cat">
+      }
+      
+      <!-- Like/Nope Overlays -->
+      <div [style.opacity]="likeOpacity()" class="absolute top-8 left-8 transform -rotate-12">
+        <i class="fas fa-heart text-red-500 text-8xl [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))]"></i>
+      </div>
+      <div [style.opacity]="nopeOpacity()" class="absolute top-8 right-8 transform rotate-12">
+        <i class="fas fa-heart-crack text-red-400 text-8xl [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))]"></i>
+      </div>
+
+      <!-- Zoom button -->
+      @if(active()) {
+        <button (click)="onZoomClick($event)" class="absolute bottom-4 right-4 w-12 h-12 bg-black/50 text-white rounded-full flex items-center justify-center text-xl backdrop-blur-sm hover:bg-black/75 transition-colors focus:outline-none focus:ring-2 focus:ring-white">
+          <i class="fas fa-search-plus"></i>
+        </button>
+      }
+    </div>
+  </div>
+}

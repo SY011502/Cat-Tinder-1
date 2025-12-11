@@ -1,0 +1,100 @@
+<div class="flex flex-col min-h-screen font-sans text-slate-800 dark:text-slate-200 overflow-x-hidden">
+  <!-- Header -->
+  <header class="w-full text-center p-4 border-b border-slate-200 dark:border-slate-700 shadow-sm">
+    <h1 class="text-2xl font-bold text-rose-500 flex items-center justify-center gap-3">
+      <i class="fas fa-cat"></i>
+      <span>Cat-Tinder</span>
+    </h1>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow flex flex-col items-center p-2">
+    @switch (view()) {
+      @case ('loading') {
+        <div class="flex-grow flex flex-col items-center justify-center gap-4">
+          <div class="w-12 h-12 border-4 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-lg text-slate-500">Fetching cute cats...</p>
+        </div>
+      }
+      @case ('swiping') {
+        <div class="flex-grow flex flex-col items-center justify-center w-full max-w-sm">
+          <!-- Card Stack -->
+          <div class="relative w-full h-[30rem] mb-6 flex items-center justify-center" [style.perspective]="'1000px'">
+            @if(cats().length > 0) {
+              @for(cat of cats(); track cat.id; let i = $index) {
+                @if (i >= currentIndex()) {
+                  <app-cat-card 
+                    [cat]="cat" 
+                    [active]="i === currentIndex()"
+                    (swiped)="onSwiped($event)"
+                    (zoom)="selectCat($event)"
+                    [trigger]="triggerSwipe()"
+                    class="absolute transition-transform duration-500 ease-in-out w-full h-full"
+                    [style.transform]="getCardTransform(i)"
+                    [style.z-index]="cats().length - i"
+                  />
+                }
+              }
+            } @else {
+              <p class="text-slate-500">No more cats to show!</p>
+            }
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex items-center gap-8">
+            <button (click)="swipeAction(false)" class="w-20 h-20 rounded-full bg-white dark:bg-slate-700 shadow-lg flex items-center justify-center text-gray-500 text-4xl transform transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+              <i class="fas fa-times"></i>
+            </button>
+            <button (click)="swipeAction(true)" class="w-20 h-20 rounded-full bg-white dark:bg-slate-700 shadow-lg flex items-center justify-center text-red-500 text-4xl transform transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+              <i class="fas fa-heart"></i>
+            </button>
+          </div>
+        </div>
+      }
+      @case ('summary') {
+        <div class="flex-grow flex flex-col w-full text-center">
+          <div class="flex-shrink-0 pt-4">
+            <h2 class="text-3xl font-bold mb-2">That's all for now!</h2>
+            <p class="text-xl text-slate-600 dark:text-slate-400 mb-6">You liked {{ likedCats().length }} out of {{ cats().length }} cats.</p>
+          </div>
+      
+          <div class="w-full w-[90vw] mx-auto p-4 overflow-y-auto bg-white dark:bg-slate-800 rounded-lg shadow-inner flex-grow min-h-0">
+            @if (likedCats().length > 0) {
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                @for (cat of likedCats(); track cat.id; let i = $index) {
+                  <button (click)="selectCat(cat)" class="block aspect-square rounded-lg overflow-hidden shadow-md transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 focus:ring-offset-slate-800">
+                    @if (i === 0) {
+                      <img [ngSrc]="'https://cataas.com/cat/' + cat.id + '?w=200&h=200'" width="200" height="200" priority class="w-full h-full object-cover" alt="A liked cat">
+                    } @else {
+                      <img [ngSrc]="'https://cataas.com/cat/' + cat.id + '?w=200&h=200'" width="200" height="200" class="w-full h-full object-cover" alt="A liked cat">
+                    }
+                  </button>
+                }
+              </div>
+            } @else {
+              <div class="flex items-center justify-center h-full">
+                <p class="text-center text-slate-500">You didn't like any cats. Maybe you're a dog person? 🤔</p>
+              </div>
+            }
+          </div>
+      
+          <div class="flex-shrink-0 py-6">
+            <button (click)="reset()" class="px-8 py-3 bg-rose-500 text-white font-bold rounded-full shadow-lg transition-transform transform hover:scale-105">
+              Play Again
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </main>
+
+  <!-- Image Modal -->
+  @if (selectedCat(); as cat) {
+    <div (click)="deselectCat()" class="fixed inset-0 bg-black/75 flex items-center justify-center z-50 animate-fade-in">
+      <div (click)="$event.stopPropagation()" class="relative w-[90vw] max-w-lg max-h-[90vh] p-4 bg-white dark:bg-slate-800 rounded-lg shadow-2xl animate-scale-up">
+        <img [ngSrc]="'https://cataas.com/cat/' + cat.id" width="800" height="600" priority class="object-contain max-w-full max-h-[85vh] rounded" alt="A large view of a liked cat">
+        <button (click)="deselectCat()" class="absolute -top-4 -right-4 w-10 h-10 bg-white dark:bg-slate-700 rounded-full text-slate-800 dark:text-slate-200 flex items-center justify-center shadow-lg text-xl hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">&times;</button>
+      </div>
+    </div>
+  }
+</div>

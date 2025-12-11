@@ -1,0 +1,5 @@
+{
+  "name": "Cat-Tinder",
+  "description": "A fun app to discover your cat preferences by swiping through a series of cat pictures. Swipe right for 'like' and left for 'dislike', then see a summary of your favorite felines.",
+  "requestFramePermissions": []
+}
